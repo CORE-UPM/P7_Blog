@@ -6,7 +6,7 @@
 
 # Práctica 7: Posts
 
-Versión: 30 de Abril de 2024
+Versión: 24 de Marzo de 2025
 
 ## Objetivos
 * Afianzar los conocimientos obtenidos sobre el uso de Express para desarrollar servidores web.
@@ -45,7 +45,7 @@ En la práctica 7 deben añadirse las siguiente primitivas al interfaz REST:
 * `DELETE /posts/:postId(\\d+)`
     * Borrar de la BBDD el post cuyo **id** es igual a **postId**.
 * `GET /posts/:postId(\\d+)/attachment`
-    * Devuelve la imagen adjunta del post cuyo **id* es igual a **postId**, y si no existe, devuelve una imagen por defecto situada en **public/images/none.png**.
+    * Devuelve la imagen adjunta del post cuyo **id** es igual a **postId**, y si no existe, devuelve una imagen por defecto situada en **public/images/none.png**.
 
   
 Se seguirá el patrón MVC, creando los modelos, controladores, rutas y vistas que se necesiten para gestionar los posts.
@@ -99,7 +99,11 @@ alojada en el fichero **blog.sqlite**, se definirá el modelo **Post** con los c
 el modelo **Attachment** con los campos **mime** e **image**, se definira la relación 1-a-1 entre **Post** y **Attachment**
 y se exportará la instancia **sequelize** creada.
 
+El tipo del campo **title** del modelo **Post** debe ser **STRING**.
+
 El tipo del campo **body** del modelo **Post** debe ser **TEXT**.
+
+El tipo del campo **mime** del modelo **Attachment** debe ser **STRING**.
 
 El tipo del campo **image** del modelo **Attachment** debe ser **BLOB('long')**, y su contenido serán los bytes de la
 imagen.
@@ -155,23 +159,34 @@ Nota: El comando sequelize tiene un fallo y no permite que existan espacios en b
 **blog.sqlite**. Desarrolle esta práctica en un directorio cuya ruta absoluta no contenga espacios en blanco.
 
 ### Tarea 3 - Actualizar el marco de aplicación
-Modifique el menú de navegación de **views/layout.ejs**.
-El layout debe contener al menos una etiqueta html "header" de clase "main" e id "mainHeader".
-Además debe añadir un nuevo botón con el texto **Posts**. 
-Al pulsar este botón, se enviara la primitiva **GET /posts** para navegar a la página que muestra un listado con 
-los posts existentes.
+
+Modifique el fichero **views/layout.ejs** añadir un nuevo botón con el texto **Posts**.
+
+Al pulsarlo, se enviará una petición **GET /posts** al servidor para que devuelva
+una  página que muestre un listado con todos los posts existentes en la base de datos.
+
+Este botón se debe implementar como una etiqueta de tipo **a** 
+que contenga una propiedad **href** con el valor **/posts**, 
+y debe situarse dentro de la etiqueta **nav** que implementa la barra de navegación.
 
 ### Tarea 4 - Desarrollar el autoload del parámetro de ruta :postId
 
 Algunas de las definiciones de rutas usan un parámetro de ruta llamado **:postId**.
 
 En esta tarea se desarrollará el método **load** del controlador de los posts. Este método
-saca de la BBDD el post cuyo **id** es igual al valor pasado en el parámetro de ruta **:postId**, y los guardará
-en el atributo **load** del objeto **req**, llamándolo **post**, es decir, el objeto post recuperado de la BBDD estará
+saca de la BBDD el post cuyo **id** es igual al valor pasado en el parámetro de ruta **:postId**.
+El objeto post sacado se guardará en el atributo **load** del objeto **req**, llamándolo **post**, 
+es decir, el objeto post recuperado de la BBDD se fguardará y estará
 disponible en **req.load.post**.
-El atributo **load** de **req** almacena todos los objetos
-precargados, y el del post es **post**.
-Este post lo usarán los metodos **show**, **edit**, **update**, **delete** y **attachment** del controlador post.
+
+El objeto **req.load** se usa en esta práctica, y en todas las prácticas que haremos 
+en los próximos días, para almacenar los objetos precargados de la BBDD con los métodos **load** que 
+iremos desarrollando. 
+Los objetos precargados se guardarán en **req.load** creando propiedades.
+El objeto post precargado en esta práctica se guarda en **req.load.post**.
+
+Este post precargado lo usarán los metodos **show**, **edit**, **update**, **delete** y **attachment** 
+del controlador post.
 
 El middleware **load** debe buscar el post en la BBDD usando el método **findByPk**, guardarlo en
 **req.load.post**, y llamar a **next** para continuar la ejecución de los siguientes middlewares.
@@ -186,17 +201,26 @@ continue en el siguiente middleware de atención de errores.
 
 La imagen adjunta de un post se almacena en el campo **image** de la tabla **Attachments**. 
 
-Para mostrar esta imagen en un fichero HTML, se debe usar una etiqueta **img** y asignar al atributo **src** el valor **/posts/POST_ID/attachment**, donde **POST_ID** de debe sustituir por el valor del parámetro de ruta **:postId**.
+Para mostrar esta imagen en un fichero HTML, se debe usar una etiqueta **img** y 
+asignar al atributo **src** el valor **/posts/POST_ID/attachment**, donde **POST_ID** 
+se debe sustituir por el valor del parámetro de ruta **:postId**.
 
     <img src="/posts/POST_ID/attachment"/>
 
 Se pide definir la ruta **GET /posts/:postId/attachment** para acceder a la imagen adjunta de post indicado por el parámetro de ruta **postId**.
 
 Esta ruta debe definirse en el fichero **routes/posts.js**.
+Este fichero es un módulo que debe exportar un objeto Router de Express.
+Las rutas para manejar los posts y los adjuntos se definiran en este objeto Router.
+El fichero **routes/posts.js** debe importarse en **app.js** y registrarlo como un middleware.
 
-El método middleware que atiende esta petición debe desarrollarse en el fichero controlador **controllers/post.js**, y debe llamarse **attachment**. Este middleware debe devolver la imagen, y si no existe, devolver una imagen por defecto situada en el directorio  public/images/none.png.
+El método middleware que atiende esta petición debe desarrollarse en el fichero 
+controlador **controllers/post.js**, y debe llamarse **attachment**. 
+Este middleware debe devolver la imagen, y si no existe, devolver una imagen por defecto 
+situada en **public/images/none.png**.
 
-El fichero **routes/posts.js** debe requerir/importar el fichero **controllers/post.js** para poder acceder al método **attachment** exportado.
+El fichero **routes/posts.js** debe requerir/importar el fichero **controllers/post.js** para 
+poder acceder al método **attachment** exportado.
 
 
 ### Tarea 6 - Desarrollar la primitiva GET /posts
@@ -206,7 +230,7 @@ petición HTTP **GET /posts**.
 
 Esta ruta debe definirse en el fichero **routes/posts.js**.
 
-El método middleware que atiende esta peticiónes deben desarrollarse en el fichero controlador **controllers/post.js**,
+El método middleware que atiende estas peticiónes debe desarrollarse en el fichero controlador **controllers/post.js**,
 y debe llamarse **index**.
 
 El fichero **routes/posts.js** debe requerir/importar el fichero **controllers/post.js**
@@ -220,21 +244,25 @@ La llamada a **findAll** debe cargar también la imagen adjunta de cada post usa
 
 La vista **views/posts/index.ejs** toma como parámetro el array de posts que debe mostrar. 
 
-La vista pintará la lista de posts dentro de un elemento HTML de tipo **\<section\>**. Cada post debe ser un **\<article\>** con clase "postShow".
-Para cada post debe pintar el título del post, su imagen adjunta, y tres botones que permitan mostrar, editar o borrar el post.
+La vista pintará la lista de posts dentro de un elemento HTML de tipo **\<section\>**.
+Cada post debe presentarse con una etiqueta **\<article\>** que sea de la clase **postIndex**.
+Para cada post se debe pintar el título del post, su imagen adjunta, y tres botones que permitan 
+mostrar, editar o borrar el post.
+Estos botones deben mostrar los siguientes títulos: **Show**, **Edit** y **Delete**.
 No pinte el cuerpo del post.
 
-Para pintar la imagen adjunta se usará la vista **views/attachments/attachment.ejs**, que es igual a la desarrollada en
-el mini proyecto **Quiz**.
+Para pintar la imagen adjunta se usará la vista **views/attachments/_attachment.ejs**, que es exactamente 
+igual a la desarrollada en el mini proyecto **Quiz**.
 
-La vista **views/posts/index.ejs** también debe tener un botón que permita crear nuevos posts. Este botón invocará
-la primitiva **GET /posts/new**.
+La vista **views/posts/index.ejs** debe tener un botón que permita crear nuevos posts.
+Este botón debe tener el título **Create New Post**, e 
+invocar la primitiva **GET /posts/new**.
+Debe implementarse con una etiqueta **a** que tenga un atributo **href**.
 
 #### Probar
 
-Ahora el servidor debe responder a la petición **GET http://localhost:3000/posts** mostrando el listado de todos los posts.
-
-
+Lanzar el servidor y usar un navegador para visitar la página **http://localhost:3000/posts**.
+El servidor debe responder mostrando el listado de todos los posts.
 
 ### Tarea 7 - Desarrollar la primitiva GET /posts/:postId
 
@@ -248,24 +276,26 @@ fichero controlador **controllers/post.js**, y debe llamarse **show**.
 
 El middleware **show** debe recuperar el post a mostrar de **req.load.post**, donde ya fue
 precargado con el middleware **load**.
-A continuación enviará una respuesta HTTP renderizando
+A continuación, enviará una respuesta HTTP renderizando
 la vista **views/posts/show.ejs**, pasando como parámetro el objeto post.
 
 La vista **views/posts/show.ejs** toma como parámetro el post a mostrar.
 
 Esta vista mostrará el título, el cuerpo y la imagen adjunta del post.
+También debe mostrar un botón titulado **Edit** que permita editar el post.
 
-La vista pintará el post dentro de un elemento HTML de tipo **\<article\>** con clase "postShow".
+La vista pintará el post dentro de una etiqueta HTML de tipo **\<article\>** de la clase **postShow**.
 
-Para pintar la imagen adjunta se usará la vista **views/attachments/attachment.ejs**, que es igual a la desarrollada en 
-el mini proyecto **Quiz**.
+Para pintar la imagen adjunta se usará la vista **views/attachments/_attachment.ejs**, 
+que es exactamente igual a la desarrollada en el mini proyecto **Quiz**.
 
 #### Probar
 
-Ahora el servidor debe responder a la petición **http://localhost:3000/posts/1** mostrando el post con id igual a 1. 
+Ejecute el servidor, y use un navegador para visitar la URL **http://localhost:3000/posts/1**.
+El servidor debe devolver una página que muestre el post con id igual a 1. 
 Puede usar otros valores de id.
 
-### Tarea 8 - Desarrollar la primitiva de creación y edicion de posts
+### Tarea 8 - Desarrollar la primitiva de creación y edición de posts
 
 Las primitivas usadas para crear un post son:
 
@@ -300,7 +330,12 @@ y añadir las siguientes sentencia en **app.js** para importarlo y configurarlo:
 Los middlewares que atienden las primitivas anteriores deben desarrollarse en el fichero 
 controlador **controllers/post.js**, y deben llamarse **new**, **create**, **edit** y **update**.
 
-El middleware **new** enviará un formulario al navegador renderizando la vista **views/posts/new.ejs**. Esta vista debe incluir al menos un campo input de type text con id "title" y name "title", un campo textarea con id "body" y name "body", un campo input de type file con id "image" y name "image",  y un campo input type "submit" y name "enviar" e id "enviar"
+El middleware **new** enviará un formulario al navegador renderizando la vista **views/posts/new.ejs**. 
+Esta vista debe incluir al menos:
+* un campo **input** de **type** "_text_" con **id** "_title_" y **name** "_title_".
+* un campo **textarea** con **id** "_body_" y **name** "_body_".
+* un campo **input** de **type** "_file_" con **id** "_img_" y **name** "_image_".
+* un campo **input** de **type** "_submit_" e **id** "_enviar_".
 
 El middleware **create** creará un nuevo post con los datos introducidos en el formulario **new**. 
 En caso de que se produzcan errores de validación, debe presentarse el formulario otra vez para que el usuario corrija
@@ -310,8 +345,13 @@ Si la creación del post se realiza con éxito, este middleware responderá al n
 ruta **/posts/:postId** para mostrar el post creado.
 
 El middleware **edit** sacará de la BBDD el objeto **post** indicado por el parámetro de ruta **:postId**, y enviará un 
-formulario al navegador renderizando la vista **views/posts/edit.ejs**. Esta vista toma como argumento el objeto **post**
-a editar. Esta vista debe incluir al menos un campo input de type text con id "title" y name "title", un campo textarea con id "body" y name "body", un campo input de type "file" con id "image" y name "image",  y un campo input type "submit" y name "enviar" e id "enviar".
+formulario al navegador renderizando la vista **views/posts/edit.ejs**. 
+Esta vista toma como argumento el objeto **post** a editar. 
+Esta vista debe incluir al menos:
+* un campo **input** de **type** "_text_" con **id** "_title_" y **name** "_title_".
+* un campo **textarea** con **id** "_body_" y **name** "_body_".
+* un campo **input** de **type** "_file_" con **id** "_img_" y **name** "_image_".
+* un campo **input** de **type** "_submit_" e **id** "_enviar_".
 
 El middleware **update** sacará de la BBDD el objeto **post** indicado por el parámetro de ruta **:postId**, actualizará sus
 propiedades con los valores introducidos en el formulario **edit**, y actualizará los valores en la BBDD.
@@ -333,10 +373,9 @@ Las imágenes adjuntas de los posts se suben al servidor cuando se ejecutan los 
 **create** y **update**. Las peticiones que reciben estos middlewares llevan
 un cuerpo multiparte, donde una de las partes es el fichero que se está subiendo.
 Para extraer el fichero subido debe usarse el paquete **multer**.
-Las imágenes subidas por los formularios deben identificarse usando el atributo **name=image**.
+Las imágenes subidas por los formularios deben identificarse usando el atributo **name="image"**.
 
 Para instalar el paquete multer debe ejecutar el comando:
-
 
     $ npm install multer
 
@@ -354,6 +393,11 @@ post con los valores a editar.
 Ahora el servidor debe responder a las peticiones **http://localhost:3000/posts/new** y **http://localhost:3000/posts/1/edit** 
 para obtener los formulario de creación y de edición de post, 
 y a las peticiones **POST http://localhost:3000/posts** y **PUT http://localhost:3000/posts/1** para crear o actualizar un post.
+
+Ejecute el servidor y use un navegador para visitar las URLs
+**http://localhost:3000/posts/new** y **http://localhost:3000/posts/1/edit**.
+
+Puede usar otros valores de id.
 
 
 ### Tarea 9 - Desarrollar la primitiva DELETE /posts/:postId
@@ -419,20 +463,23 @@ Instrucciones [aquí](https://github.com/CORE-UPM/Instrucciones_Practicas/blob/m
 
 ## Rúbrica
 
-Se puntuará el ejercicio a corregir sumando el % indicado a la nota total si la parte indicada es correcta:
+Antes de evaluar la práctica se realizarán un serie de comprobaciones:
+- Existe el directorio blog.
+- Se ha usado correctamente el marco de aplicación.
+- Existen los ficheros pedidos: controladores, migraciones, seeders, ...
+- Se han creado los scripts pedidos en package.json.
 
-- **10%:** Las plantillas express-partials tienen los componentes adecuados
+Una vez superadas las comprobaciones anteriores,
+se puntuará la práctica sumando el % indicado a la nota total si la parte indicada es correcta:
 - **5%:** Se atiende la petición GET / y muestra la página de bienvenida
 - **5%:** Se atiende la petición GET /author y muestra el cv del alumno
-- **10%:** Se atiende la petición GET /posts y se muestran todos los posts.
-- **10%:** Se atiende la petición GET /posts/:postId que muestra el post pedido.
-- **5%:** La peticion GET /posts/:postId de un post inexistente informa de que no existe.
-- **5%:** Se atiende la petición GET /posts/new y muestra los campos del formulario new.
-- **10%:** La petición POST /posts crea un nuevo post.
-- **10%:** No puede crearse un post con campos vacios. TODO
-- **10%:** Se atiende la petición GET /posts/:postId/edit y muestra los campos del formulario bien rellenos.
-- **10%:** La petición PUT /posts/:postId actualiza el post
-- **10%:** La petición DELETE /posts/:postId borra el post indicado
+- **15%:** Se muestran el listado de todos los posts de forma correcta.
+- **15%:** Se muestran los posts individuales de forma correcta.
+- **5%:** Comprobar que la ruta /posts/:postId/attachment devuelve la imagen de un post.
+- **15%:** La creación de un nuevo post funciona correctamente.
+- **10%:** No puede crearse un post con campos vacios.
+- **20%:** La edición de los posts funciona correctamente.
+- **10%:** El borrado de los posts funciona correctamente.
 
 Si pasa todos los tests se dará la máxima puntuación.
 
