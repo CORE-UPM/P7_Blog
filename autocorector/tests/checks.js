@@ -380,7 +380,7 @@ describe("Tests Práctica 7", function () {
       browser.assert.element('form input[name="image"]');
 
       this.msg_err = `La página /posts/new no muestra correctamente el botón de submit en el formulario`;
-      browser.assert.element('form input#enviar');
+      browser.assert.element('form input[type="submit"]');
 
       this.msg_err = `No se puede rellenar la página /posts/new`;
       const title2save = 'XXXXX Mi titulo XXXXX';
@@ -389,7 +389,7 @@ describe("Tests Práctica 7", function () {
       await browser.fill('#body', body2save);
 
       this.msg_err = `No se puede enviar la página /posts/new`;
-      await browser.pressButton('#enviar');
+      await browser.pressButton('form input[type="submit"]');
       browser.assert.status(200);
 
       this.msg_err = `No se muestra el post creado después de enviar el formulario de la página /posts/new`;
@@ -412,7 +412,7 @@ describe("Tests Práctica 7", function () {
       // Los campos del formulario estan vacios y no los relleno
 
       this.msg_err = `El envio de un formulario para crear un post con los campos vacíos debe funcionar`;
-      await browser.pressButton('#enviar');
+      await browser.pressButton('form input[type="submit"]');
       browser.assert.status(200);
 
       this.msg_err = `El intento de crear de un post vacío no redirecciona a la página de crear de un post nuevo`;
@@ -430,7 +430,7 @@ describe("Tests Práctica 7", function () {
       browser.assert.element('form input[name="image"]');
 
       this.msg_err = `No se muestra el botón de submit en el formulario`;
-      browser.assert.element('form input#enviar');
+      browser.assert.element('form input[type="submit"]');
 
       this.msg_err = `Los campos del formulario deben continuar vacíos`;
       browser.text('form textarea[name="body"]').should.be.equal("");
@@ -467,7 +467,7 @@ describe("Tests Práctica 7", function () {
       browser.assert.element('form input[name="image"]');
 
       this.msg_err = `La página /posts/${post.id}/edit no muestra correctamente el botón de submit en el formulario`;
-      browser.assert.element('form input#enviar');
+      browser.assert.element('form input[type="submit"]');
 
       this.msg_err = `La página de editar un post no incluye el titulo del post`;
       browser.html('form input[name="title"]').includes(post.title).should.be.equal(true);
@@ -483,7 +483,7 @@ describe("Tests Práctica 7", function () {
       await browser.fill('#body', body2save);
 
       this.msg_err = `No se puede enviar la página /posts/${post.id}/edit`;
-      await browser.pressButton('#enviar');
+      await browser.pressButton('form input[type="submit"]');
       browser.assert.status(200);
 
       this.msg_err = `No se muestra el post editado después de enviar el formulario de la página /posts/new`;
@@ -505,7 +505,7 @@ describe("Tests Práctica 7", function () {
       browser.assert.status(200);
       await browser.fill('#title', '');
       await browser.fill('#body', body2saveV2);
-      await browser.pressButton('#enviar');
+      await browser.pressButton('form input[type="submit"]');
       browser.assert.status(200);
       browser.location.href.should.be.equal(`http://127.0.0.1:${TEST_PORT}/posts/${post.id}?_method=PUT`);
       browser.text('form textarea[name="body"]').should.be.equal(body2saveV2);
@@ -515,7 +515,7 @@ describe("Tests Práctica 7", function () {
       browser.assert.status(200);
       await browser.fill('#title', title2saveV2);
       await browser.fill('#body', '');
-      await browser.pressButton('#enviar');
+      await browser.pressButton('form input[type="submit"]');
       browser.assert.status(200);
       browser.location.href.should.be.equal(`http://127.0.0.1:${TEST_PORT}/posts/${post.id}?_method=PUT`);
       browser.html('form input[name="title"]').includes(title2saveV2).should.be.equal(true);

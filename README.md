@@ -6,7 +6,7 @@
 
 # Práctica 7: Posts
 
-Versión: 24 de Marzo de 2025
+Versión: 25 de Marzo de 2025
 
 ## Objetivos
 * Afianzar los conocimientos obtenidos sobre el uso de Express para desarrollar servidores web.
@@ -335,7 +335,7 @@ Esta vista debe incluir al menos:
 * un campo **input** de **type** "_text_" con **id** "_title_" y **name** "_title_".
 * un campo **textarea** con **id** "_body_" y **name** "_body_".
 * un campo **input** de **type** "_file_" con **id** "_img_" y **name** "_image_".
-* un campo **input** de **type** "_submit_" e **id** "_enviar_".
+* un campo **input** de **type** "_submit_".
 
 El middleware **create** creará un nuevo post con los datos introducidos en el formulario **new**. 
 En caso de que se produzcan errores de validación, debe presentarse el formulario otra vez para que el usuario corrija
@@ -351,7 +351,7 @@ Esta vista debe incluir al menos:
 * un campo **input** de **type** "_text_" con **id** "_title_" y **name** "_title_".
 * un campo **textarea** con **id** "_body_" y **name** "_body_".
 * un campo **input** de **type** "_file_" con **id** "_img_" y **name** "_image_".
-* un campo **input** de **type** "_submit_" e **id** "_enviar_".
+* un campo **input** de **type** "_submit_".
 
 El middleware **update** sacará de la BBDD el objeto **post** indicado por el parámetro de ruta **:postId**, actualizará sus
 propiedades con los valores introducidos en el formulario **edit**, y actualizará los valores en la BBDD.
