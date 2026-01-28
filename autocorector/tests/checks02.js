@@ -5,6 +5,7 @@ const {
   checkFileExists,
   create_browser,
   from_env,
+  DEBUG,
   ROOT,
   path_assignment,
   warn_errors,
@@ -87,10 +88,8 @@ describe("Tests Práctica 7", function () {
       this.msg_err = 'No se han encontrado todos los scripts';
       scripts = {
         "super": "supervisor ./bin/www",
-        "migrate": "sequelize db:migrate --url sqlite://$(pwd)/blog.sqlite",
-        "seed": "sequelize db:seed:all --url sqlite://$(pwd)/blog.sqlite",
-        "migrate_win": "sequelize db:migrate --url sqlite://%cd%/blog.sqlite",
-        "seed_win": "sequelize db:seed:all --url sqlite://%cd%/blog.sqlite",
+        "migrate": "sequelize db:migrate",
+        "seed": "sequelize db:seed:all",
       }
       for (script in scripts) {
         this.msg_err = `Falta el comando para ${script}`;
@@ -156,8 +155,12 @@ describe("Tests Práctica 7", function () {
   });
 
   describe("Tests funcionales", function () {
-    var server;
-    const db_filename = 'post.sqlite';
+    let server;
+
+    const databaseConfigPath = path.resolve(path.join(__dirname, "..", "config", "config.json"));
+    process.env.DATABASE_CONFIG_PATH = databaseConfigPath;
+
+    const db_filename = 'autocorector.sqlite';
     const db_file = path.resolve(path.join(ROOT, db_filename));
 
     before(async function () {
@@ -171,20 +174,19 @@ describe("Tests Práctica 7", function () {
       fs.closeSync(fs.openSync(db_file, 'w'));
 
       let sequelize_cmd = path.join(PATH_ASSIGNMENT, "node_modules", ".bin", "sequelize")
-      let db_url = `sqlite://${db_file}`;
-      let db_relative_url = `sqlite://${db_filename}`;
-      await exec(`${sequelize_cmd} db:migrate --url "${db_url}" --migrations-path ${path.join(PATH_ASSIGNMENT, "migrations")}`)
+      await exec(`${sequelize_cmd} db:migrate --config "${databaseConfigPath}" --migrations-path ${path.join(PATH_ASSIGNMENT, "migrations")}`)
       debug('Lanzada la migración');
-      await exec(`${sequelize_cmd} db:seed:all --url "${db_url}" --seeders-path ${path.join(PATH_ASSIGNMENT, "seeders")}`)
+      await exec(`${sequelize_cmd} db:seed:all --config "${databaseConfigPath}" --seeders-path ${path.join(PATH_ASSIGNMENT, "seeders")}`)
       debug('Lanzado el seeder');
 
 
       let bin_path = path.join(PATH_ASSIGNMENT, "bin", "www");
       server = spawn('node', [bin_path], {
         env: {
+          DEBUG: DEBUG,
           PORT: TEST_PORT,
-          DATABASE_URL: db_relative_url,
-          PATH: process.env.PATH
+          PATH: process.env.PATH,
+          DATABASE_CONFIG_PATH: databaseConfigPath
         }
       });
       server.stdout.setEncoding('utf-8');
