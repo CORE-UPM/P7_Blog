@@ -42,6 +42,12 @@ describe("Tests Práctica 7", function () {
       fs.existsSync(path.join(PATH_ASSIGNMENT, "views", "layout.ejs")).should.be.equal(true);
     });
 
+    scored(`Comprobar que se ha creado el fichero de configuración de Sequelize`, -1, async function () {
+        this.msg_ok = 'Se incluye config/config.json';
+        this.msg_err = 'No se ha encontrado config/config.json';
+        fs.existsSync(path.join(PATH_ASSIGNMENT, "config", "config.json")).should.be.equal(true);
+    });
+
     scored(`Comprobar que existen las migraciones y el seeder`, -1, async function () {
       this.msg_ok = 'Se incluyen las migraciones y el seeder';
 

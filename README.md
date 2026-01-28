@@ -6,11 +6,19 @@
 
 # Práctica 7: Posts
 
-Versión: 27 de Marzo de 2025
+Versión: 28 de Enero de 2026
 
 ## Objetivos
 * Afianzar los conocimientos obtenidos sobre el uso de Express para desarrollar servidores web.
 * Aprender a desarrollar APIs REST para gestionar recursos web.
+
+
+## Dependencias
+
+Para realizar la práctica el alumno deberá tener instalado en su ordenador:
+- Herramienta GIT para gestión de repositorios [Github](https://git-scm.com/downloads)
+- Entorno de ejecución de javascript [NodeJS](https://nodejs.org/es/download/) versión 22.
+
 
 ## Descripción de la práctica
 
@@ -54,8 +62,9 @@ Para el modelo se creará una base de datos **SQLite** a la que se accederá usa
 La base de datos tendrá dos tablas: la tabla **Posts** para almacenar los posts, y la tabla **Attachments** para
 guardar la imagen adjunta de cada post.
 
-Los ficheros con las definiciones de los modelos, las migraciones, los seeders, las rutas, los controladores 
-y vistas se crearán siguiendo la misma filosofía que en el mini proyecto **Quiz**. 
+Los ficheros con la configuración del ORM Sequelize, las definiciones de los modelos, las migraciones, los seeders, las rutas, los controladores 
+y vistas se crearán siguiendo la misma filosofía que en el mini proyecto **Quiz**.
+La configuración del ORM Sequelize se crea en el fichero **config/config.json**.
 Los modelos se definirán en los ficheros **models/index.js**, **models/post.js** y **models/attachment.js**.
 Las migraciones y seeders se crearán en los directorios **migrations** y **seeders**.
 Las rutas se definirán en los ficheros **routes/index.js** y **routes/posts.js**.
@@ -91,6 +100,9 @@ La práctica usa una base de datos **SQLite** a la que se accede usando **Sequel
 migraciones y seeders. Por tanto, el alumno debe instalar los paquetes **sqlite3**, **sequelize** y **sequelize-cli**:
 
     $ npm install sqlite3 sequelize sequelize-cli
+
+El alumno debe crear el fichero **config/config.json**, cuyo contenido es muy parecido al realizado en el 
+mini proyecto **Quiz**. Cambie el nombre del fichero de la base de datos a **blog.sqlite**.
 
 El alumno debe crear el fichero **models/index.js**.
 El contenido del fichero **models/index.js** es muy parecido al realizado en el mini proyecto **Quiz**. 
@@ -141,22 +153,15 @@ Para crear este fichero puede usar el comando:
     npx sequelize seed:generate --name FillPostsTable
 
 El alumno debe crear en **package.json** (dentro del directorio `blog`) los siguientes 
-scripts para aplicar la migración y el seeder (hay versiones para unix y para windows):
+scripts para aplicar la migración y el seeder:
 
-    "migrate": "sequelize db:migrate --url sqlite://$(pwd)/blog.sqlite",  
-    "seed": "sequelize db:seed:all --url sqlite://$(pwd)/blog.sqlite",  
-    "migrate_win": "sequelize db:migrate --url sqlite://%cd%/blog.sqlite",  
-    "seed_win": "sequelize db:seed:all --url sqlite://%cd%/blog.sqlite"  
+    "migrate": "sequelize db:migrate",  
+    "seed": "sequelize db:seed:all"  
 
 Así, para ejecutar las migraciones y el seeder puede invocar los comandos:
 
     $ npm run migrate  
     $ npm run seed
-
-o su versión con **_win** para máquinas Windows.
-
-Nota: El comando sequelize tiene un fallo y no permite que existan espacios en blanco en la URL que apunta al fichero
-**blog.sqlite**. Desarrolle esta práctica en un directorio cuya ruta absoluta no contenga espacios en blanco.
 
 ### Tarea 3 - Actualizar el marco de aplicación
 
